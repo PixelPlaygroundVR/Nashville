@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Playgrounds Nashville</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+        }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .title {
+            position: absolute;
+            top: 20px;
+            color: #ff00cc;
+            text-shadow: 0 0 15px #00ffcc;
+            font-size: clamp(2rem, 5vw, 4rem);
+            z-index: 2;
+            animation: neonFlicker 2s infinite;
+        }
+        @keyframes neonFlicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+        .phone {
+            position: absolute;
+            bottom: 20px;
+            color: #00ffcc;
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            text-shadow: 0 0 10px #ff00cc;
+            z-index: 2;
+        }
+        audio { display: none; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="scene"></canvas>
+    <h1 class="title">Pixel Playgrounds Nashville</h1>
+    <div class="phone">(615) 606-4969</div>
+    <audio id="bgMusic" src="https://www.chosic.com/wp-content/uploads/2021/07/The_Epicness_of_Love.mp3" loop></audio>
+    <audio id="hoverSound" src="https://www.myinstants.com/media/sounds/sci-fi-glitch.mp3"></audio>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script>
+        // Scene Setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('scene'), alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.position.z = 50;
+
+        // Central 3D Voxel Playground
+        const playgroundGroup = new THREE.Group();
+        const voxelMaterial = new THREE.MeshBasicMaterial({ color: '#ff00cc', wireframe: true });
+        for (let i = -2; i <= 2; i++) {
+            for (let j = -2; j <= 2; j++) {
+                const voxel = new THREE.Mesh(new THREE.BoxGeometry(5, 5, 5), voxelMaterial);
+                voxel.position.set(i * 6, j * 6, Math.random() * 10 - 5);
+                playgroundGroup.add(voxel);
+            }
+        }
+        scene.add(playgroundGroup);
+
+        // Interactive 3D Buttons
+        const buttonLinks = [
+            { url: 'https://your-shopify-store.com', text: 'Shopify', color: '#00ffcc' },
+            { url: 'https://instagram.com/yourprofile', text: 'Instagram', color: '#ff00cc' },
+            { url: 'https://facebook.com/yourprofile', text: 'Facebook', color: '#00ffcc' },
+            { url: 'tel:+16156064969', text: 'Installations', color: '#ff00cc' }
+        ];
+        const buttons = [];
+        buttonLinks.forEach((link, i) => {
+            const geometry = new THREE.SphereGeometry(3, 16, 16);
+            const material = new THREE.MeshBasicMaterial({ color: link.color, transparent: true, opacity: 0.8 });
+            const button = new THREE.Mesh(geometry, material);
+            const angle = (i / buttonLinks.length) * Math.PI * 2;
+            button.position.set(Math.cos(angle) * 20, Math.sin(angle) * 20, 0);
+            button.userData = { url: link.url, basePos: button.position.clone(), angle: angle };
+            scene.add(button);
+            buttons.push(button);
+        });
+
+        // Particle System for Cyberpunk Vibe
+        const particleCount = 500;
+        const particles = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 200;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * 200;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 200;
+        }
+        particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particleMaterial = new THREE.PointsMaterial({ color: '#00ffcc', size: 0.5 });
+        const particleSystem = new THREE.Points(particles, particleMaterial);
+        scene.add(particleSystem);
+
+        // Raycaster for Interactivity
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let hoverSound = document.getElementById('hoverSound');
+
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(buttons);
+            buttons.forEach(btn => {
+                btn.scale.set(1, 1, 1);
+                if (intersects.length > 0 && intersects[0].object === btn) {
+                    btn.scale.set(1.5, 1.5, 1.5);
+                    hoverSound.play();
+                }
+            });
+        }
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('click', () => {
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(buttons);
+            if (intersects.length > 0) window.open(intersects[0].object.userData.url, '_blank');
+        });
+
+        // Animation Loop
+        let time = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+            playgroundGroup.rotation.y += 0.005;
+            buttons.forEach(btn => {
+                btn.position.x = Math.cos(time + btn.userData.angle) * 20;
+                btn.position.y = Math.sin(time + btn.userData.angle) * 20;
+                btn.lookAt(camera.position);
+            });
+            particleSystem.rotation.y += 0.001;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Audio
+        document.getElementById('bgMusic').play();
+
+        // Resize Handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
