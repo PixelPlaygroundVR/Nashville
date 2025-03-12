@@ -3,306 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ULTIMATE GITHUB</title>
+  <title>My Perfect Landing Page</title>
+  <!-- Google Fonts for clean typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
-    /* Base and reset */
-    body, html {
+    /* Reset & Base Styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      overflow: hidden;
-      background: #000;
-      font-family: 'Courier New', Courier, monospace;
     }
-    canvas {
-      display: block;
-    }
-    /* Dripping neon title overlay */
-    #overlay {
-      position: absolute;
-      top: 20px;
-      width: 100%;
-      text-align: center;
-      pointer-events: none;
-      z-index: 10;
-    }
-    #title {
-      font-size: 3em;
-      color: #ff00cc;
-      text-shadow: 0 0 10px #ff00cc, 0 0 20px #ff00cc;
-      animation: drip 3s infinite alternate;
-      letter-spacing: 0.1em;
-    }
-    @keyframes drip {
-      0%   { text-shadow: 0 0 10px #ff00cc, 0 0 20px #ff00cc; }
-      100% { text-shadow: 0 20px 10px #ff00cc, 0 40px 20px #ff00cc; }
-    }
-    /* AR scanline overlay for that extra glitch factor */
-    #scanlines {
-      pointer-events: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
+    html, body {
       height: 100%;
-      background: repeating-linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0) 0,
-        rgba(0, 0, 0, 0) 2px,
-        rgba(0, 0, 0, 0.2) 2px,
-        rgba(0, 0, 0, 0.2) 4px
-      );
-      mix-blend-mode: overlay;
-      animation: flicker 2s infinite;
-      z-index: 20;
+      font-family: 'Roboto', sans-serif;
     }
-    @keyframes flicker {
-      0%, 100% { opacity: 0.8; }
-      50% { opacity: 0.6; }
+    body {
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    nav li {
+      width: 100%;
+    }
+    nav a {
+      display: block;
+      text-decoration: none;
+      font-size: 1.2rem;
+      padding: 0.8rem;
+      border: 2px solid #fff;
+      border-radius: 5px;
+      transition: background 0.3s, transform 0.3s;
+      color: #fff;
+      font-weight: 700;
+    }
+    nav a:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+    footer {
+      font-size: 0.9rem;
+    }
+    @media (min-width: 600px) {
+      nav ul {
+        flex-direction: row;
+        justify-content: center;
+      }
+      nav li {
+        width: auto;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Neon dripping title -->
-  <div id="overlay">
-    <h1 id="title">ULTIMATE GITHUB</h1>
+  <div class="container">
+    <header>
+      <h1>Welcome to My Perfect Landing Page</h1>
+    </header>
+    <nav>
+      <ul>
+        <li><a href="https://www.instagram.com/YOUR_INSTAGRAM" target="_blank">Instagram</a></li>
+        <li><a href="https://www.facebook.com/YOUR_FACEBOOK" target="_blank">Facebook</a></li>
+        <li><a href="https://YOUR_SHOPIFY_URL" target="_blank">Shopify</a></li>
+        <li><a href="tel:+16156064969">Installations</a></li>
+      </ul>
+    </nav>
+    <footer>
+      <p>&copy; 2025 Your Company. All rights reserved.</p>
+    </footer>
   </div>
-  <!-- AR scanline overlay -->
-  <div id="scanlines"></div>
-  <!-- 3D canvas -->
-  <canvas id="webgl-canvas"></canvas>
-  <!-- Background synthwave loop (replace with your track URL) -->
-  <audio id="bg-music" loop autoplay>
-    <source src="YOUR_CYBERPUNK_SYNTHWAVE_TRACK_URL.mp3" type="audio/mpeg">
-    Your browser does not support audio.
-  </audio>
-  <!-- Glitch sound for button interactions -->
-  <audio id="glitch-sound">
-    <source src="https://www.myinstants.com/media/sounds/sci-fi-glitch.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- Three.js library from CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-  <!-- Main insane script -->
-  <script>
-    // Setup renderer and scene
-    const canvas = document.getElementById('webgl-canvas');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    document.body.appendChild(renderer.domElement);
-
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.02);
-
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 5, 15);
-
-    // Lighting: Ambient and neon point light
-    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-    const pointLight = new THREE.PointLight(0xff00cc, 1, 50);
-    pointLight.position.set(0, 10, 10);
-    scene.add(pointLight);
-
-    // Custom drippy/liquid-metal shader for insane neon effects
-    const drippyShader = {
-      uniforms: { time: { value: 0.0 } },
-      vertexShader: `
-        varying vec2 vUv;
-        uniform float time;
-        void main() {
-          vUv = uv;
-          vec3 pos = position;
-          pos.y += sin(pos.x * 5.0 + time * 2.0) * 0.2;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec2 vUv;
-        void main() {
-          gl_FragColor = vec4(mix(vec3(1.0, 0.0, 0.8), vec3(0.0, 1.0, 0.8), vUv.y), 1.0);
-        }
-      `
-    };
-
-    // Create an ultra-futuristic 3D core: a voxel structure that rotates and pulses.
-    const voxelGroup = new THREE.Group();
-    const voxelSize = 0.8;
-    const voxelGeo = new THREE.BoxGeometry(voxelSize, voxelSize, voxelSize);
-    const voxelMaterial = new THREE.ShaderMaterial({
-      uniforms: THREE.UniformsUtils.clone(drippyShader.uniforms),
-      vertexShader: drippyShader.vertexShader,
-      fragmentShader: drippyShader.fragmentShader,
-      wireframe: true
-    });
-    const gridSize = 5;
-    for (let x = -gridSize; x <= gridSize; x++) {
-      for (let z = -gridSize; z <= gridSize; z++) {
-        const voxel = new THREE.Mesh(voxelGeo, voxelMaterial.clone());
-        voxel.position.set(x * voxelSize * 1.2, Math.random() * 1.5, z * voxelSize * 1.2);
-        voxelGroup.add(voxel);
-      }
-    }
-    voxelGroup.position.y = 2;
-    scene.add(voxelGroup);
-
-    // Create interactive 3D buttons—insanely cool holographic cubes orbiting the core
-    const buttonGroup = new THREE.Group();
-    scene.add(buttonGroup);
-    const buttonsData = [
-      { label: 'Shopify', url: 'YOUR_SHOPIFY_URL' },
-      { label: 'Instagram', url: 'YOUR_INSTAGRAM_URL' },
-      { label: 'Facebook', url: 'YOUR_FACEBOOK_URL' },
-      { label: 'Installations', url: 'tel:+16156064969' }
-    ];
-    const buttonGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-    const buttons = [];
-    buttonsData.forEach((btn, i) => {
-      const btnMaterial = new THREE.ShaderMaterial({
-        uniforms: THREE.UniformsUtils.clone(drippyShader.uniforms),
-        vertexShader: drippyShader.vertexShader,
-        fragmentShader: drippyShader.fragmentShader,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.9
-      });
-      const cube = new THREE.Mesh(buttonGeo, btnMaterial);
-      cube.userData = { url: btn.url, label: btn.label, orbitPhase: i * (Math.PI/2) };
-      buttonGroup.add(cube);
-      buttons.push(cube);
-    });
-
-    // Raycaster for detecting pointer interactions
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    const glitchSound = document.getElementById('glitch-sound');
-
-    window.addEventListener('pointermove', (event) => {
-      mouse.x = (event.clientX/window.innerWidth)*2 - 1;
-      mouse.y = -(event.clientY/window.innerHeight)*2 + 1;
-    });
-    window.addEventListener('pointerdown', () => {
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(buttons);
-      if (intersects.length > 0) {
-        const btn = intersects[0].object;
-        btn.scale.set(1.5, 1.5, 1.5);
-        glitchSound.currentTime = 0;
-        glitchSound.play();
-        setTimeout(() => window.location.href = btn.userData.url, 300);
-      }
-    });
-
-    // Insane cyberpunk voxel skyline background at the bottom
-    const skyline = new THREE.Group();
-    const buildingGeo = new THREE.BoxGeometry(1, 1, 1);
-    for (let i = -15; i < 15; i++) {
-      const building = new THREE.Mesh(buildingGeo, voxelMaterial.clone());
-      building.scale.y = Math.random()*5 + 2;
-      building.position.set(i * 1.2, building.scale.y/2 - 1.5, -10);
-      skyline.add(building);
-    }
-    scene.add(skyline);
-    function updateSkyline(t) {
-      skyline.children.forEach(bld => {
-        bld.position.y = (Math.sin(t + bld.position.x) * 0.5) + (bld.scale.y/2 - 1.5);
-      });
-    }
-
-    // Neon glyph particle rain (0s, 1s, and the letters 'GIT') falling like digital rain
-    const particleCount = 250;
-    const particleGeo = new THREE.BufferGeometry();
-    const positions = [];
-    for (let i = 0; i < particleCount; i++) {
-      positions.push((Math.random()-0.5)*30, Math.random()*20, (Math.random()-0.5)*30);
-    }
-    particleGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    const particleMat = new THREE.PointsMaterial({ color: 0x00ffcc, size: 0.5 });
-    const particles = new THREE.Points(particleGeo, particleMat);
-    scene.add(particles);
-
-    // Spinning orbital ring with glowing glyphs for extra insanity
-    const ringGeo = new THREE.TorusGeometry(4.5, 0.1, 16, 100);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0xff00cc, wireframe: true });
-    const orbitalRing = new THREE.Mesh(ringGeo, ringMat);
-    orbitalRing.rotation.x = Math.PI/2;
-    scene.add(orbitalRing);
-
-    // Drifting cyber-orbs that pulse and occasionally burst (for that “wtf” factor)
-    const cyberOrbs = [];
-    const orbGeo = new THREE.SphereGeometry(0.3, 16, 16);
-    const orbMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc });
-    for (let i = 0; i < 10; i++) {
-      const orb = new THREE.Mesh(orbGeo, orbMat.clone());
-      orb.position.set((Math.random()-0.5)*20, Math.random()*10, (Math.random()-0.5)*20);
-      scene.add(orb);
-      cyberOrbs.push(orb);
-    }
-
-    // Animation loop: insane motion, orbiting buttons, pulsing voxels, drifting particles, and more.
-    const clock = new THREE.Clock();
-    function animate() {
-      requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-
-      // Update shader uniform for drippy effects
-      voxelGroup.children.forEach(voxel => {
-        if(voxel.material.uniforms) voxel.material.uniforms.time.value = t;
-      });
-      buttons.forEach(btn => {
-        if(btn.material.uniforms) btn.material.uniforms.time.value = t;
-      });
-
-      // Rotate and pulse the core voxel structure
-      voxelGroup.rotation.y += 0.005;
-      let pulse = 1 + 0.05*Math.sin(t*3);
-      voxelGroup.scale.set(pulse, pulse, pulse);
-
-      // Orbit the holographic cubes
-      buttons.forEach(btn => {
-        if(btn.scale.x < 1.6) {
-          let phase = t + btn.userData.orbitPhase;
-          let a = 6, b = 3;
-          btn.position.set(a*Math.cos(phase), 2, b*Math.sin(phase));
-          btn.rotation.y += 0.02;
-        } else {
-          btn.scale.lerp(new THREE.Vector3(1,1,1), 0.1);
-        }
-      });
-
-      // Skyline effect update
-      updateSkyline(t);
-
-      // Rotate orbital ring
-      orbitalRing.rotation.z += 0.01;
-
-      // Cyber orbs drifting and pulsing
-      cyberOrbs.forEach((orb, i) => {
-        orb.position.x += Math.sin(t+i)*0.005;
-        orb.position.y += Math.cos(t+i)*0.005;
-        let s = 1 + 0.2*Math.sin(t*2+i);
-        orb.scale.set(s, s, s);
-      });
-
-      // Particle rain: continuously falling and resetting
-      const positionsAttr = particles.geometry.attributes.position;
-      for (let i = 0; i < positionsAttr.count; i++) {
-        positionsAttr.array[i*3+1] -= 0.02;
-        if(positionsAttr.array[i*3+1] < 0) positionsAttr.array[i*3+1] = 20;
-      }
-      positionsAttr.needsUpdate = true;
-
-      renderer.render(scene, camera);
-    }
-    animate();
-
-    // Handle window resizing for maximum responsiveness
-    window.addEventListener('resize', () => {
-      const width = window.innerWidth, height = window.innerHeight;
-      renderer.setSize(width, height);
-      camera.aspect = width/height;
-      camera.updateProjectionMatrix();
-    });
-  </script>
 </body>
 </html>
